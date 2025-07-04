@@ -1,8 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-// const { OpenAI } = require("openai");
-const fetch = require("node-fetch"); // REMOVED for Node.js v24+
 
 const app = express();
 app.use(cors());
@@ -13,8 +11,8 @@ app.get("/api/hello", (req, res) => {
 });
 
 // Azure OpenAI config
-const AZURE_OPENAI_ENDPOINT = "";
-const AZURE_OPENAI_API_KEY = "";
+const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY;
 
 // // OpenAI setup (commented out)
 // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
