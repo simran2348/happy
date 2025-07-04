@@ -8,4 +8,4 @@
 
 # misc
 .DS_Store
-.env
+/server/.env
