@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
+
 function HappyChatBox() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState([])
@@ -13,7 +15,7 @@ function HappyChatBox() {
     setError(null)
     setMessages(msgs => [...msgs, { from: 'user', text: input }])
     try {
-      const res = await fetch('http://localhost:3001/api/chat', {
+      const res = await fetch(`${baseUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })

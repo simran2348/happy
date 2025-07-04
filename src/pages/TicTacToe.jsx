@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import '../App.css'
 
 const emptyBoard = Array(9).fill(null)
+const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
 function calculateWinner(squares) {
   const lines = [
@@ -39,7 +40,7 @@ function TicTacToe() {
     async function getAIMove() {
       setAiThinking(true)
       try {
-        const res = await fetch('http://localhost:3001/api/tictactoe-ai-move', {
+        const res = await fetch(`${baseUrl}/api/tictactoe-ai-move`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ board })
