@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 // const { OpenAI } = require("openai");
-// const fetch = require("node-fetch"); // REMOVED for Node.js v24+
+const fetch = require("node-fetch"); // REMOVED for Node.js v24+
 
 const app = express();
 app.use(cors());
