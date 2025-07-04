@@ -13,8 +13,8 @@ app.get("/api/hello", (req, res) => {
 });
 
 // Azure OpenAI config
-const AZURE_OPENAI_ENDPOINT = "https://oai-292108-cop-sbx.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview";
-const AZURE_OPENAI_API_KEY = "88FIywIF1fqE8rwzeWwwRQURQlc08ppmlRvQGcscHzo7zNz4AwYGJQQJ99BFACHYHv6XJ3w3AAABACOGBI27";
+const AZURE_OPENAI_ENDPOINT = "";
+const AZURE_OPENAI_API_KEY = "";
 
 // // OpenAI setup (commented out)
 // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
