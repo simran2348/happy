@@ -7,21 +7,6 @@
   z-index: 1;
 }
 
-.weather-anim.dark-sky::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(to bottom, rgba(40,50,70,0.38) 0%, rgba(30,30,40,0.32) 100%);
-  pointer-events: none;
-  z-index: 0;
-}
-.weather-anim.dark-sky {
-  /* Optionally, slightly desaturate everything */
-  filter: saturate(0.85) brightness(0.92);
-}
-
 .sun, .morning-sun, .afternoon-sun {
   position: absolute;
   border-radius: 50%;
@@ -69,16 +54,15 @@
   left: 50vw;
   top: 60vh;
   width: 160px;
-  height: 80px;
-  background: radial-gradient(circle at 50% 100%, #ffb347 0%, #ffcc33 80%, transparent 100%);
-  border-radius: 80px 80px 0 0;
+  height: 160px;
+  background: radial-gradient(circle at 50% 50%, #ff944d 0%, #ffb347 70%, #e07a5f 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 32px 8px #b85c1e88;
   transform: translateX(-50%);
-  box-shadow: 0 0 60px 10px #ffb34788;
-  animation: sunset-glow 4s ease-in-out infinite alternate;
 }
 @keyframes sunset-glow {
-  0% { filter: brightness(1); }
-  100% { filter: brightness(1.2) drop-shadow(0 0 30px #ffb347); }
+  0% { filter: brightness(0.95); }
+  100% { filter: brightness(1.08) drop-shadow(0 0 12px #ffb347); }
 }
 
 .moon {

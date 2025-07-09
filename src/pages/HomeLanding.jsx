@@ -10,7 +10,7 @@ function getTimeOfDay() {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 11) return 'morning'
   if (hour >= 11 && hour < 17) return 'afternoon'
-  if (hour >= 17 && hour < 19) return 'evening'
+  if (hour >= 17 && hour < 20) return 'evening'
   return 'night'
 }
 
@@ -40,7 +40,7 @@ function HomeLanding() {
       <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 55, zIndex: 10, position: 'relative' }}>
         <img src={logoSrc} alt="Happy Company Logo" style={{ width: '50vw', maxWidth: 500, height: 'auto', objectFit: 'contain' }} />
       </div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 150 }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 100 }}>
         <button
           className="moving-button"
           style={{ minWidth: 250, fontSize: '1.2rem' }}

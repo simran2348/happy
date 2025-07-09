@@ -1,9 +1,11 @@
 import './AnimatedWeather.css'
 import { useEffect, useState } from 'react'
 import Lottie from 'lottie-react'
-import cloudAnimation from '../assets/clouds.json'
 import birdAnimation from '../assets/birds.json'
 import birdDarkAnimation from '../assets/birds-dark.json'
+import cloudsClearDay from '../assets/clouds-clear-day.json'
+import cloudsClearNight from '../assets/clouds-clear-night.json'
+import cloudsRest from '../assets/clouds-rest.json'
 
 function getSunPosition() {
   const hour = new Date().getHours();
@@ -86,110 +88,17 @@ function Fog() {
 function Lightning() {
   return <div className="lightning-effect"><div className="lightning" /></div>
 }
-function Birds({ timeOfDay }) {
-  if (timeOfDay !== 'morning' && timeOfDay !== 'afternoon') return null
-  return (
-    <div className="birds-effect">
-      {Array.from({ length: 5 }).map((_, i) => {
-        const delay = i * 2.5
-        const top = 18 + i * 4 + Math.random() * 4
-        return (
-          <svg
-            key={i}
-            className="bird-svg"
-            style={{ animationDelay: `${delay}s`, top: `${top}vh` }}
-            width="48" height="24" viewBox="0 0 48 24" fill="none"
-          >
-            <path
-              className="bird-wing"
-              d="M2,22 Q24,2 46,22"
-              stroke="#222"
-              strokeWidth="2.5"
-              fill="none"
-            />
-            <path
-              className="bird-body"
-              d="M22,18 Q24,20 26,18"
-              stroke="#222"
-              strokeWidth="2"
-              fill="none"
-            />
-          </svg>
-        )
-      })}
-    </div>
-  )
-}
 function Rainbow({ show }) {
   return show ? <div className="rainbow-effect" /> : null
 }
 
-function generateClouds(timeOfDay, isCloudy) {
-  // More clouds if cloudy, fewer if clear
-  const minClouds = isCloudy ? 6 : 3
-  const maxClouds = isCloudy ? 10 : 6
-  const count = Math.floor(Math.random() * (maxClouds - minClouds + 1)) + minClouds
-  const clouds = []
-  for (let i = 0; i < count; i++) {
-    // Size: 80-220px wide
-    const width = 80 + Math.random() * 140
-    // Height: 30-70px
-    const height = 30 + Math.random() * 40
-    // Position: top 5-40vh, left 0-90vw
-    const top = 5 + Math.random() * 35
-    const left = Math.random() * 90
-    // Color: vary by time of day
-    let base = 255, tint = 255, alpha = 0.85
-    if (timeOfDay === 'evening') { base = 230; tint = 210; alpha = 0.8 }
-    if (timeOfDay === 'night') { base = 200; tint = 220; alpha = 0.7 }
-    if (isCloudy) { base -= 20; tint -= 20; alpha = 0.9 }
-    // Add a little random blue/gray
-    const r = base + Math.floor(Math.random() * 10)
-    const g = base + Math.floor(Math.random() * 10)
-    const b = tint + Math.floor(Math.random() * 20)
-    clouds.push({
-      id: i + '-' + Date.now(),
-      width,
-      height,
-      top,
-      left,
-      color: `rgba(${r},${g},${b},${alpha})`
-    })
+function LottieClouds({ timeOfDay, weatherCode }) {
+  let animationData
+  if (weatherCode === 0) {
+    animationData = (timeOfDay === 'night') ? cloudsClearNight : cloudsClearDay
+  } else {
+    animationData = cloudsRest
   }
-  return clouds
-}
-
-function DynamicClouds({ timeOfDay, isCloudy }) {
-  const [clouds, setClouds] = useState(() => generateClouds(timeOfDay, isCloudy))
-  useEffect(() => {
-    setClouds(generateClouds(timeOfDay, isCloudy))
-  }, [timeOfDay, isCloudy])
-  return (
-    <>
-      {clouds.map(cloud => (
-        <div
-          key={cloud.id}
-          className="cloud"
-          style={{
-            position: 'absolute',
-            top: `${cloud.top}vh`,
-            left: `${cloud.left}vw`,
-            width: cloud.width,
-            height: cloud.height,
-            background: cloud.color,
-            opacity: 1,
-            zIndex: 2,
-            filter: 'blur(0.5px)',
-            borderRadius: '50% / 40%',
-            boxShadow: `0 8px 32px 0 rgba(0,0,0,0.08)`
-          }}
-        />
-      ))}
-    </>
-  )
-}
-
-function LottieClouds() {
   return (
     <div style={{
       position: 'absolute',
@@ -197,14 +106,10 @@ function LottieClouds() {
       height: '100vh',
       zIndex: 2,
       pointerEvents: 'none',
-      // display: 'flex',
-      // justifyContent: 'center',
-      // alignItems: 'center'
     }}>
       <Lottie
-        animationData={cloudAnimation}
+        animationData={animationData}
         loop={true}
-        // style={{ width: '60vw', height: '40vh' }}
       />
     </div>
   )
@@ -306,9 +211,7 @@ function AnimatedWeather({ timeOfDay, weatherCode }) {
       {/* Rainbow */}
       <Rainbow show={showRainbow} />
       {/* Lottie Clouds */}
-      {(isCloudy || timeOfDay === 'morning' || timeOfDay === 'afternoon' || timeOfDay === 'evening') && <LottieClouds />}
-      {/* Dynamic Clouds (optional: keep for extra depth) */}
-      {/* {(isCloudy || timeOfDay === 'morning' || timeOfDay === 'afternoon' || timeOfDay === 'evening') && <DynamicClouds timeOfDay={timeOfDay} isCloudy={isCloudy} />} */}
+      {(isCloudy || timeOfDay === 'morning' || timeOfDay === 'afternoon' || timeOfDay === 'evening') && <LottieClouds timeOfDay={timeOfDay} weatherCode={weatherCode} />}
       {/* Rain or Drizzle */}
       {isRain && <Rain drizzle={false} />}
       {isDrizzle && <Rain drizzle={true} />}
