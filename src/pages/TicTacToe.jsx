@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import '../App.css'
 
 const emptyBoard = Array(9).fill(null)
@@ -28,9 +28,7 @@ function calculateWinner(squares) {
 function TicTacToe() {
   const [board, setBoard] = useState(emptyBoard)
   const [xIsNext, setXIsNext] = useState(true)
-  const [searchParams] = useSearchParams()
   const [aiThinking, setAiThinking] = useState(false)
-  const aiMode = searchParams.get('ai') === '1'
   const winner = calculateWinner(board)
   const isDraw = !winner && board.every(Boolean)
   const navigate = useNavigate()
@@ -61,14 +59,14 @@ function TicTacToe() {
         setAiThinking(false)
       }
     }
-    if (aiMode && !winner && !isDraw && !xIsNext) {
+    if (!winner && !isDraw && !xIsNext) {
       getAIMove()
     }
     // eslint-disable-next-line
-  }, [aiMode, board, xIsNext, winner, isDraw])
+  }, [board, xIsNext, winner, isDraw])
 
   function handleClick(idx) {
-    if (board[idx] || winner || (aiMode && (!xIsNext || aiThinking))) return
+    if (board[idx] || winner || !xIsNext || aiThinking) return
     const newBoard = board.slice()
     newBoard[idx] = 'X'
     setBoard(newBoard)
@@ -87,11 +85,7 @@ function TicTacToe() {
   } else if (isDraw) {
     status = "It's a draw!"
   } else {
-    if (aiMode) {
-      status = aiThinking ? "AI is thinking... 🤖" : xIsNext ? "Your turn (X)" : "AI's turn (O) 🤖"
-    } else {
-      status = `Next turn: ${xIsNext ? 'X' : 'O'}`
-    }
+    status = aiThinking ? "AI is thinking... 🤖" : "Your turn (X)"
   }
 
   return (
@@ -102,7 +96,7 @@ function TicTacToe() {
       >
         ← Back
       </button>
-      <h1>Tic Tac Toe {aiMode && <span style={{fontSize:'1.2rem'}}>vs AI 🤖</span>}</h1>
+      <h1>Tic Tac Toe <span style={{fontSize:'1.2rem'}}>vs AI 🤖</span></h1>
       <div style={{ marginBottom: 20, fontSize: '1.2rem', fontWeight: 'bold' }}>{status}</div>
       <div className="ttt-board">
         {board.map((cell, idx) => (
@@ -110,7 +104,7 @@ function TicTacToe() {
             key={idx}
             className="ttt-cell"
             onClick={() => handleClick(idx)}
-            disabled={!!cell || winner || (aiMode && (!xIsNext || aiThinking))}
+            disabled={!!cell || winner || !xIsNext || aiThinking}
           >
             {cell}
           </button>
@@ -123,10 +117,11 @@ function TicTacToe() {
         Restart
       </button>
       <div style={{marginTop: 20, fontSize: '1rem', color: '#fff', opacity: 0.7}}>
-        Mode: {aiMode ? 'Player vs AI' : 'Player vs Player'}
+        Mode: Player vs AI
       </div>
     </div>
   )
 }
 
 export default TicTacToe 
+
