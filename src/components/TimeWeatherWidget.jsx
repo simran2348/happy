@@ -7,10 +7,12 @@ function formatDate(date) {
   return date.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 }
 
+
 function TimeWeatherWidget({ onWeatherChange }) {
   const [now, setNow] = useState(new Date())
   const [weather, setWeather] = useState(null)
   const [location, setLocation] = useState(null)
+  const [locationName, setLocationName] = useState('')
   const [error, setError] = useState(null)
 
   // Update time every second
@@ -32,6 +34,25 @@ function TimeWeatherWidget({ onWeatherChange }) {
       err => setError('Location denied')
     )
   }, [])
+
+  // Reverse geocode to get city/country
+  useEffect(() => {
+    if (!location) return
+    const fetchLocationName = async () => {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lon}`)
+        const data = await res.json()
+        if (data.address) {
+          const city = data.address.city || data.address.town || data.address.village || data.address.hamlet || ''
+          const country = data.address.country || ''
+          setLocationName([city, country].filter(Boolean).join(', '))
+        }
+      } catch (e) {
+        setLocationName('')
+      }
+    }
+    fetchLocationName()
+  }, [location])
 
   useEffect(() => {
     if (!location) return
@@ -71,6 +92,11 @@ function TimeWeatherWidget({ onWeatherChange }) {
     }}>
       <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4 }}>{formatDate(now)}</div>
       <div style={{ fontSize: 32, fontWeight: 'bold', letterSpacing: 2 }}>{formatTime(now)}</div>
+      {locationName && (
+        <div style={{ fontSize: 15, color: '#444', marginTop: 2, marginBottom: 2 }}>
+          <span role="img" aria-label="location">📍</span> {locationName}
+        </div>
+      )}
       {weather && (
         <div style={{ marginTop: 8, fontSize: 16 }}>
           <span role="img" aria-label="weather">🌡️</span> {weather.temperature}°C &nbsp;
