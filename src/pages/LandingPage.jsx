@@ -21,7 +21,7 @@ function LandingPage() {
       <button
         className="moving-button"
         style={{ minWidth: 250, fontSize: '1.2rem', marginBottom: 20 }}
-        onClick={() => alert('Emoji Riddle coming soon!')}
+        onClick={() => navigate('/emoji-riddle')}
       >
         Play "Emoji Riddle" 😃❓
       </button>

@@ -94,6 +94,101 @@ app.post("/api/tictactoe-ai-move", async (req, res) => {
   }
 });
 
+// --- Emoji Riddle Game Endpoints ---
+
+// POST /api/emoji-riddle: Generate a new emoji riddle (emojis + answer)
+app.post("/api/emoji-riddle", async (req, res) => {
+  try {
+    const prompt = `Generate a creative emoji riddle. Respond ONLY with a single line of valid JSON with two fields: emojis (a string of 2-4 emojis that together represent a well-known, popular word, phrase, or character—such as a famous person, movie, superhero, idiom, or brand) and answer (the solution to the riddle, a single word or short phrase). Each emoji in the combo must contribute to the answer, and the answer should not be the meaning of just one emoji. The answer must be something widely recognized and popular, not obscure or random. Example: {\"emojis\": \"🕷️🧑\", \"answer\": \"spider man\"}. Do not include any explanation or text before or after the JSON.`;
+    const response = await fetch(AZURE_OPENAI_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "api-key": AZURE_OPENAI_API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: "You are a creative emoji riddle generator. Only reply in JSON as instructed." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 60,
+        temperature: 1.0
+      })
+    });
+    const data = await response.json();
+    // Try to parse the JSON from the AI's response
+    let riddle = null;
+    let aiContent = data.choices?.[0]?.message?.content;
+    try {
+      riddle = JSON.parse(aiContent);
+    } catch (e) {
+      // Try to extract the first JSON object from the response
+      const match = aiContent && aiContent.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          riddle = JSON.parse(match[0]);
+        } catch (e2) {
+          return res.status(500).json({ error: "Failed to parse AI response", raw: data });
+        }
+      } else {
+        return res.status(500).json({ error: "Failed to parse AI response", raw: data });
+      }
+    }
+    res.json(riddle);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to get emoji riddle from Azure OpenAI" });
+  }
+});
+
+// POST /api/emoji-riddle/check: Check if the user's guess matches the answer using AI
+app.post("/api/emoji-riddle/check", async (req, res) => {
+  const { emojis, answer, guess } = req.body;
+  if (!emojis || !answer || !guess) {
+    return res.status(400).json({ error: "emojis, answer, and guess are required" });
+  }
+  try {
+    const prompt = `The emoji riddle is: ${emojis}. The correct answer is: ${answer}. The user's guess is: ${guess}. Is the guess correct? Reply ONLY with a single line of valid JSON in the format: {\"correct\": true/false, \"feedback\": \"short feedback for the user\"}. Do not include any explanation or text before or after the JSON.`;
+    const response = await fetch(AZURE_OPENAI_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "api-key": AZURE_OPENAI_API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: "You are an emoji riddle judge. Only reply in JSON as instructed." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 40,
+        temperature: 0.2
+      })
+    });
+    const data = await response.json();
+    let result = null;
+    let aiContent = data.choices?.[0]?.message?.content;
+    try {
+      result = JSON.parse(aiContent);
+    } catch (e) {
+      // Try to extract the first JSON object from the response
+      const match = aiContent && aiContent.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          result = JSON.parse(match[0]);
+        } catch (e2) {
+          return res.status(500).json({ error: "Failed to parse AI response", raw: data });
+        }
+      } else {
+        return res.status(500).json({ error: "Failed to parse AI response", raw: data });
+      }
+    }
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to check answer with Azure OpenAI" });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
